@@ -6,8 +6,8 @@
     "start": "cd backend && npm start",
     "prebuild": "cd backend && npm install && cd ../root169 && npm install",
     "build": "cd root169 && npm run build",
-    "postbuild": "echo 'Build completed' && shx cp -r root169/build backend/build",
-    "serve": "cd root169/build && serve -s ."
+    "postbuild": "echo 'Build completed' && cp -r root169/build backend/build",
+    "serve": "serve -s backend/build"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +17,6 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "shx": "^0.3.4",
     "serve": "^14.0.1"
   }
 }
