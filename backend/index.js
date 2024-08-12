@@ -2,7 +2,7 @@ import express from 'express';
 import mysql from 'mysql2';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import path from 'path';
 
 const app = express();
@@ -25,6 +25,7 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+// Check database connection
 pool.getConnection((err, connection) => {
     if (err) {
         console.error('Error connecting to the database:', err);
@@ -34,7 +35,7 @@ pool.getConnection((err, connection) => {
     connection.release();
 });
 
-// Define routes
+// Define API routes
 app.post('/signup', (req, res) => {
     const sql = "INSERT INTO users (`username`, `phone`, `password`) VALUES (?, ?, ?)";
     const values = [
@@ -67,88 +68,13 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.get('/boards', (req, res) => {
-    const { question, answer } = req.query;
-    let query = 'SELECT * FROM boards WHERE 1=1';
-    const values = [];
-    if (question) {
-        query += ' AND question = ?';
-        values.push(question);
-    }
-    if (answer) {
-        query += ' AND answer = ?';
-        values.push(answer);
-    }
-    pool.query(query, values, (err, data) => {
-        if (err) {
-            console.error('Error executing query:', err);
-            return res.status(500).json({ error: 'Internal Server Error' });
-        }
-        res.json(data);
-    });
-});
-
-app.post('/boards', (req, res) => {
-    const { question, answer } = req.body;
-    if (typeof question !== 'string' || typeof answer !== 'string') {
-        return res.status(400).json({ error: 'Invalid input data' });
-    }
-    const q = 'INSERT INTO boards (question, answer) VALUES (?, ?)';
-    const values = [question, answer];
-    pool.query(q, values, (err, data) => {
-        if (err) {
-            console.error('Error executing query:', err);
-            return res.status(500).json({ error: 'Failed to add new board' });
-        }
-        res.json({ message: 'Flashcard added successfully', data });
-    });
-});
-
-app.put('/boards', (req, res) => {
-    const { currentQuestion, currentAnswer, newQuestion, newAnswer } = req.body;
-    if (!currentQuestion || !currentAnswer || !newQuestion || !newAnswer) {
-        return res.status(400).json({ error: 'All fields are required: current question, current answer, new question, and new answer.' });
-    }
-    const q = 'UPDATE boards SET question = ?, answer = ? WHERE question = ? AND answer = ?';
-    const values = [newQuestion, newAnswer, currentQuestion, currentAnswer];
-    pool.query(q, values, (err, data) => {
-        if (err) {
-            console.error('Error executing query:', err);
-            return res.status(500).json({ error: 'Failed to update flashcard' });
-        }
-        if (data.affectedRows === 0) {
-            return res.status(404).json({ error: 'Flashcard not found' });
-        }
-        res.json({ message: 'Flashcard updated successfully' });
-    });
-});
-
-app.delete('/boards', (req, res) => {
-    const { question, answer } = req.query;
-    if (!question || !answer) {
-        return res.status(400).json({ error: 'Question and answer must be provided' });
-    }
-    const q = 'DELETE FROM boards WHERE question = ? AND answer = ?';
-    pool.query(q, [question, answer], (err, data) => {
-        if (err) {
-            console.error('Error executing query:', err);
-            return res.status(500).json({ error: 'Failed to delete board' });
-        }
-        if (data.affectedRows === 0) {
-            return res.status(404).json({ error: 'Flashcard not found' });
-        }
-        res.json({ message: 'Flashcard deleted successfully', data });
-    });
-});
-
-app.get('/', (req, res) => {
-    res.json('This is the backend');
-});
+// More API routes (boards CRUD)...
 
 // Serve static files from the build directory
 const publicFolder = path.join(__dirname, 'build');
 app.use(express.static(publicFolder));
 
+// Catch-all route to serve index.html for any other routes
 app.get('*', (req, res) => {
     const indexFilePath = path.join(publicFolder, 'index.html');
     res.sendFile(indexFilePath);
@@ -159,3 +85,4 @@ const PORT = process.env.PORT || 8800;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
