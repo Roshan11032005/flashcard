@@ -13,6 +13,7 @@ const __dirname = dirname(__filename);
 app.use(cors());
 app.use(express.json());
 
+// Set up MySQL connection pool
 const pool = mysql.createPool({
     host: 'sql12.freesqldatabase.com',
     user: 'sql12725523',
@@ -33,7 +34,7 @@ pool.getConnection((err, connection) => {
     connection.release();
 });
 
-// Signup Route
+// Define routes
 app.post('/signup', (req, res) => {
     const sql = "INSERT INTO users (`username`, `phone`, `password`) VALUES (?, ?, ?)";
     const values = [
@@ -50,17 +51,14 @@ app.post('/signup', (req, res) => {
     });
 });
 
-// Login Route
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-
     pool.query(sql, [username, password], (err, results) => {
         if (err) {
             console.error('Error querying the database:', err);
             return res.status(500).json("Error");
         }
-
         if (results.length > 0) {
             res.json({ message: 'Login successful', user: results[0] });
         } else {
@@ -69,33 +67,27 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Get All Boards
-// Get Flashcards by Question and Answer
 app.get('/boards', (req, res) => {
     const { question, answer } = req.query;
     let query = 'SELECT * FROM boards WHERE 1=1';
     const values = [];
-  
     if (question) {
-      query += ' AND question = ?';
-      values.push(question);
+        query += ' AND question = ?';
+        values.push(question);
     }
-  
     if (answer) {
-      query += ' AND answer = ?';
-      values.push(answer);
+        query += ' AND answer = ?';
+        values.push(answer);
     }
-  
     pool.query(query, values, (err, data) => {
-      if (err) {
-        console.error('Error executing query:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-      res.json(data);
+        if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        res.json(data);
     });
 });
 
-// Create a New Board
 app.post('/boards', (req, res) => {
     const { question, answer } = req.body;
     if (typeof question !== 'string' || typeof answer !== 'string') {
@@ -114,43 +106,34 @@ app.post('/boards', (req, res) => {
 
 app.put('/boards', (req, res) => {
     const { currentQuestion, currentAnswer, newQuestion, newAnswer } = req.body;
-
     if (!currentQuestion || !currentAnswer || !newQuestion || !newAnswer) {
         return res.status(400).json({ error: 'All fields are required: current question, current answer, new question, and new answer.' });
     }
-
     const q = 'UPDATE boards SET question = ?, answer = ? WHERE question = ? AND answer = ?';
     const values = [newQuestion, newAnswer, currentQuestion, currentAnswer];
-
     pool.query(q, values, (err, data) => {
         if (err) {
             console.error('Error executing query:', err);
             return res.status(500).json({ error: 'Failed to update flashcard' });
         }
-
         if (data.affectedRows === 0) {
             return res.status(404).json({ error: 'Flashcard not found' });
         }
-
         res.json({ message: 'Flashcard updated successfully' });
     });
 });
 
-// Delete a Board by Question and Answer
 app.delete('/boards', (req, res) => {
     const { question, answer } = req.query;
-    
     if (!question || !answer) {
         return res.status(400).json({ error: 'Question and answer must be provided' });
     }
-    
     const q = 'DELETE FROM boards WHERE question = ? AND answer = ?';
     pool.query(q, [question, answer], (err, data) => {
         if (err) {
             console.error('Error executing query:', err);
             return res.status(500).json({ error: 'Failed to delete board' });
         }
-        // Check if any rows were affected (indicating a successful deletion)
         if (data.affectedRows === 0) {
             return res.status(404).json({ error: 'Flashcard not found' });
         }
@@ -158,12 +141,12 @@ app.delete('/boards', (req, res) => {
     });
 });
 
-// Root Route
 app.get('/', (req, res) => {
     res.json('This is the backend');
 });
 
-const publicFolder = path.join(__dirname, 'public');
+// Serve static files from the build directory
+const publicFolder = path.join(__dirname, 'build');
 app.use(express.static(publicFolder));
 
 app.get('*', (req, res) => {
@@ -171,8 +154,8 @@ app.get('*', (req, res) => {
     res.sendFile(indexFilePath);
 });
 
-// Start the Server
+// Start the server
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, () => {
-    console.log('Server is running on port 8800');
+    console.log(`Server is running on port ${PORT}`);
 });
