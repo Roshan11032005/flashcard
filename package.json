@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "cd backend && npm start",
+    "start": "cd root169 && npm run build",
     "prebuild": "cd backend && npm install && cd ../root169 && npm install",
-    "build": "cd root169 && npm run build",
+    "build": "cd backend && npm start",
     "postbuild": "echo 'Build completed' && cp -r root169/build backend/build",
     "serve": "serve -s backend/build"
   },
