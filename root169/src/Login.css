@@ -1,0 +1,94 @@
+/* Container for the login form */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .login-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Style for error messages */
+  .error {
+    color: #ff4d4d;
+    margin-bottom: 15px;
+  }
+  
+  /* Form styling */
+  .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  
+  .form-group input:focus {
+    border-color: #007BFF;
+    outline: none;
+  }
+  
+  /* Button styling */
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  button[type="button"] {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+  }
+  
+  button[type="button"]:hover {
+    background-color: #218838;
+  }
+  
+  /* Signup link styling */
+  .signup-link {
+    margin-top: 20px;
+  }
+  
+  .signup-link p {
+    margin-bottom: 10px;
+    color: #666;
+  }
+  
