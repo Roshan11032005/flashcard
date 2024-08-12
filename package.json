@@ -2,14 +2,13 @@
   "name": "flashcard",
   "version": "1.0.0",
   "main": "index.js",
- "scripts": {
-  "start": "cd backend && npm start",
-  "prebuild": "cd backend && npm install && cd ../root169 && npm install",
-  "build": "cd root169 && npm run build",
- "postbuild": "echo 'Build completed' && cp -r root169/build backend/build"
-
-}
-,
+  "scripts": {
+    "start": "cd backend && npm start",
+    "prebuild": "cd backend && npm install && cd ../root169 && npm install",
+    "build": "cd root169 && npm run build",
+    "postbuild": "echo 'Build completed' && shx cp -r root169/build backend/build",
+    "serve": "cd root169/build && serve -s ."
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -18,6 +17,7 @@
     "node": ">=18"
   },
   "devDependencies": {
-    
+    "shx": "^0.3.4",
+    "serve": "^14.0.1"
   }
 }
